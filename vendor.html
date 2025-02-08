@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vendor Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <a href="Users.html">Home</a>
+        <a href="#" class="active">Vendor Dashboard</a>
+        <a href="cart.html">Cart</a>
+        <a href="orders.html">Order History</a>
+    </nav>
+
+    <div class="container">
+        <h1>Vendor Dashboard</h1>
+        <p>Manage products and inventory.</p>
+
+        <!-- Add Product Form -->
+        <h2>Add New Product</h2>
+        <form id="add-product-form" class="product-form">
+            <label>Product Name:</label>
+            <input type="text" id="product-name" required>
+
+            <label>Price:</label>
+            <input type="number" id="product-price" required>
+
+            <label>Category:</label>
+            <input type="text" id="product-category" required>
+
+            <label>Image URL:</label>
+            <input type="text" id="product-image" required>
+
+            <button type="submit">Add Product</button>
+        </form>
+
+        <h2>Product List</h2>
+        <div id="product-container" class="product-container"></div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const productContainer = document.getElementById("product-container");
+            const addProductForm = document.getElementById("add-product-form");
+
+            let products = [];
+
+            // Fetch Products from API
+            function fetchProducts() {
+                fetch("https://fakestoreapi.com/products")
+                    .then(response => response.json())
+                    .then(data => {
+                        products = data;
+                        renderProducts();
+                    })
+                    .catch(error => console.error("Error fetching products:", error));
+            }
+
+            // Render Products
+            function renderProducts() {
+                productContainer.innerHTML = "";
+                products.forEach((product, index) => {
+                    const productForm = document.createElement("form");
+                    productForm.classList.add("product-form");
+
+                    productForm.innerHTML = `
+                        <label>Product Name:</label>
+                        <input type="text" value="${product.title}" class="product-name">
+
+                        <label>Price:</label>
+                        <input type="number" value="${product.price}" class="product-price">
+
+                        <label>Category:</label>
+                        <input type="text" value="${product.category}" class="product-category">
+
+                        <label>Image URL:</label>
+                        <input type="text" value="${product.image}" class="product-image">
+
+                        <button type="button" onclick="updateProduct(${index})">Update</button>
+                        <button type="button" onclick="deleteProduct(${index})">Delete</button>
+                    `;
+
+                    productContainer.appendChild(productForm);
+                });
+            }
+
+            // Add New Product
+            addProductForm.addEventListener("submit", (event) => {
+                event.preventDefault();
+
+                const newProduct = {
+                    title: document.getElementById("product-name").value,
+                    price: document.getElementById("product-price").value,
+                    category: document.getElementById("product-category").value,
+                    image: document.getElementById("product-image").value
+                };
+
+                products.push(newProduct);
+                renderProducts();
+                addProductForm.reset();
+            });
+
+            // Update Product
+            window.updateProduct = (index) => {
+                const productForms = document.querySelectorAll(".product-form");
+                const form = productForms[index];
+
+                products[index] = {
+                    title: form.querySelector(".product-name").value,
+                    price: form.querySelector(".product-price").value,
+                    category: form.querySelector(".product-category").value,
+                    image: form.querySelector(".product-image").value
+                };
+
+                renderProducts();
+            };
+
+            // Delete Product
+            window.deleteProduct = (index) => {
+                products.splice(index, 1);
+                renderProducts();
+            };
+
+            fetchProducts();
+        });
+    </script>
+</body>
+</html>
