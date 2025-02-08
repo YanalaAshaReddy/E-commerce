@@ -1,0 +1,1 @@
+This is a fully functional E-Commerce Website built using HTML, CSS, and JavaScript. It allows users to browse products, add them to a cart, and place orders. Vendors can also manage their products dynamically using an API.
